@@ -42,7 +42,7 @@ def category_posts(request, category_slug):
         Category,
         slug=category_slug,
         is_published=True)
-    
+
     posts = get_published_posts().filter(category=category)
     context = {'category': category, 'posts': posts}
     return render(request, template, context)
