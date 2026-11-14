@@ -1,5 +1,4 @@
 from django.shortcuts import render, get_object_or_404
-from django.utils import timezone
 
 from blog.models import Category, Post
 from blog.constants import AMOUNT_OF_POSTS
