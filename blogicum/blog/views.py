@@ -1,6 +1,6 @@
 from django.shortcuts import render, get_object_or_404
 
-from blog.models import Category, Post
+from blog.models import Category
 from blog.constants import AMOUNT_OF_POSTS
 from blog.service import get_published_posts
 
