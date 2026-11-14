@@ -1,13 +1,12 @@
-from django.db import models
 from django.contrib.auth import get_user_model
+from django.db import models
 
+from blog.constants import LENGTH_OF_FIELD, MAX_STR_LENGTH
 
-LENGTH_OF_FIELD = 256
-MAX_STR_LENGTH = 20
 User = get_user_model()
 
 
-class BaseModel(models.Model):
+class PublishCreatedModel(models.Model):
     is_published = models.BooleanField(
         'Опубликовано',
         default=True,
@@ -18,7 +17,7 @@ class BaseModel(models.Model):
         abstract = True
 
 
-class Category(BaseModel):
+class Category(PublishCreatedModel):
     title = models.CharField('Заголовок', max_length=LENGTH_OF_FIELD)
     description = models.TextField('Описание')
     slug = models.SlugField(
@@ -29,7 +28,7 @@ class Category(BaseModel):
             ' разрешены символы латиницы, цифры, дефис и подчёркивание.')
     )
 
-    class Meta(BaseModel.Meta):
+    class Meta(PublishCreatedModel.Meta):
         verbose_name = 'категория'
         verbose_name_plural = 'Категории'
 
@@ -37,10 +36,10 @@ class Category(BaseModel):
         return self.title
 
 
-class Location(BaseModel):
+class Location(PublishCreatedModel):
     name = models.CharField('Название места', max_length=LENGTH_OF_FIELD)
 
-    class Meta(BaseModel.Meta):
+    class Meta(PublishCreatedModel.Meta):
         verbose_name = 'местоположение'
         verbose_name_plural = 'Местоположения'
 
@@ -48,7 +47,7 @@ class Location(BaseModel):
         return self.name
 
 
-class Post(BaseModel):
+class Post(PublishCreatedModel):
     title = models.CharField("Заголовок", max_length=LENGTH_OF_FIELD)
     text = models.TextField('Текст')
     pub_date = models.DateTimeField(
@@ -63,6 +62,7 @@ class Post(BaseModel):
         User,
         on_delete=models.CASCADE,
         verbose_name='Автор публикации',
+        related_name='posts'
     )
     location = models.ForeignKey(
         Location,
@@ -75,13 +75,14 @@ class Post(BaseModel):
         Category,
         on_delete=models.SET_NULL,
         null=True,
-        verbose_name='Категория'
+        verbose_name='Категория',
+        related_name='posts'
     )
 
     class Meta:
         verbose_name = 'публикация'
         verbose_name_plural = "Публикации"
-        ordering = ["id"]
+        ordering = ["-pub_date"]
 
     def __str__(self):
         return self.title[:MAX_STR_LENGTH]
